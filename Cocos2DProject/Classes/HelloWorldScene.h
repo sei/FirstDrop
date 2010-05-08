@@ -29,6 +29,8 @@
 	
 	NSMutableArray *towers;
 	NSMutableArray *monsters;
+	
+	CCSprite*	m_tempTower;
 }
 
 // returns a Scene that contains the HelloWorld as the only child
