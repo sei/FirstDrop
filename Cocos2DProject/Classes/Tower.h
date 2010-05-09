@@ -7,14 +7,15 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "cocos2d.h"
+//#import "cocos2d.h"
+#import "touchable.h"
 #import "HelloWorldScene.h"
 
 #define FIRING_TICK_TIME 0.3f
 
 @class CCMonster;
 
-@interface CCTower : CCSprite 
+@interface CCTower : CTouchable //CCSprite 
 {
 	CGPoint coordinate;
 	int range; // in radius

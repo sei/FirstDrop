@@ -36,6 +36,8 @@ CCTMXLayer *gTileMapLayer;
 	// Apple recommends to re-assign "self" with the "super" return value
 	if( (self=[super init] )) {
 		
+		self.isTouchEnabled = YES;
+		
 		// create and initialize a Label
 		//CCLabel* label = [CCLabel labelWithString:@"Hello World" fontName:@"Marker Felt" fontSize:64];
 
@@ -57,16 +59,76 @@ CCTMXLayer *gTileMapLayer;
 	
 		monsters = [[NSMutableArray alloc] init];
 		towers = [[NSMutableArray alloc] init];
+		drags = [[NSMutableArray alloc] init];
+		gameuis = [[NSMutableArray alloc] init];
 				
-		[CCTower spawn:ccp(2, 4)];
-		[CCTower spawn:ccp(7, 6)];
-		[CCTower spawn:ccp(12, 3)];
+//		[CCTower spawn:ccp(2, 4)];
+//		[CCTower spawn:ccp(7, 6)];
+//		[CCTower spawn:ccp(12, 3)];
+		
+		[CDrag spawn:@"MushroomRed.png"];
 		
 		[self buildCoordinatePath];
 		
+		// monster tick
 		[self schedule:@selector(tick:) interval:1.f];
 	}
 	return self;
+}
+
+// mouse event
+
+- (BOOL)ccTouchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
+{
+	//Add a new body/atlas sprite at the touched location
+	for( UITouch *touch in touches ) {
+		CGPoint location = [touch locationInView: [touch view]];
+		
+		location = [[CCDirector sharedDirector] convertToGL: location];
+		
+		CGSize size = [[CCDirector sharedDirector] winSize];
+		
+		[CCTower spawn:ccp((int)(location.x / CELL_SIZE),
+						   (int)((size.height - location.y) / CELL_SIZE))];
+		
+		for (CDrag* drag in drags) {
+			[drag TouchesEnd:touches];
+		}
+
+	}
+	return kEventHandled;
+}
+
+- (BOOL)ccTouchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
+{
+	//Add a new body/atlas sprite at the touched location
+	for( UITouch *touch in touches ) {
+		CGPoint location = [touch locationInView: [touch view]];
+		
+		location = [[CCDirector sharedDirector] convertToGL: location];
+		
+		for (CDrag* drag in drags) {
+			[drag TouchesMove:touches];
+		}
+		
+	}
+	return kEventHandled;
+}
+
+- (BOOL)ccTouchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
+{
+	//Add a new body/atlas sprite at the touched location
+	for( UITouch *touch in touches ) {
+		CGPoint location = [touch locationInView: [touch view]];
+		
+		location = [[CCDirector sharedDirector] convertToGL: location];
+		
+		for (CDrag* drag in drags) {
+			[drag TouchesBegan:touches];
+		}
+		
+	}
+	return kEventHandled;
 }
 
 -(void) addMonster:(CCMonster*)monster
@@ -101,6 +163,40 @@ CCTMXLayer *gTileMapLayer;
 -(NSMutableArray*) getTowers
 {
 	return towers;
+}
+
+-(void) addDrag:(CDrag*)drag
+{
+	[self addChild:drag];
+	[drags addObject:drag];
+}
+
+-(void) removeDrag:(CDrag*)drag
+{
+	[drags removeObject:drag];
+	[self removeChild:drag cleanup:YES];
+}
+
+-(NSMutableArray*) getDrag
+{
+	return drags;
+}
+
+-(void) addGameUI:(CGameUI*)gameui
+{
+	[self addChild:gameui];
+	[gameuis addObject:gameui];
+}
+
+-(void) removeGameUI:(CGameUI*)gameui
+{
+	[gameuis removeObject:gameui];
+	[self removeChild:gameui cleanup:YES];
+}
+
+-(NSMutableArray*) getGameUI
+{
+	return gameuis;
 }
 
 -(NSMutableArray*) getCoordinatePath
@@ -199,6 +295,9 @@ CCTMXLayer *gTileMapLayer;
 {
 	return [self getTileGidAtIndex:cellIndex] == TILE_END_POINT_GID;
 }
+
+
+
 
 // on "dealloc" you need to release all your retained objects
 - (void) dealloc

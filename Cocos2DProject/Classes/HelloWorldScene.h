@@ -3,6 +3,8 @@
 #import "cocos2d.h"
 #import "Monster.h"
 #import "Tower.h"
+#import "drag.h"
+#import "gameui.h"
 
 #define TILE_PATH_GID			39
 #define TILE_START_POINT_GID	134
@@ -30,7 +32,8 @@
 	NSMutableArray *towers;
 	NSMutableArray *monsters;
 	
-	CCSprite*	m_tempTower;
+	NSMutableArray *drags;
+	NSMutableArray *gameuis;
 }
 
 // returns a Scene that contains the HelloWorld as the only child
@@ -43,6 +46,17 @@
 -(void) addTower:(CCTower*)tower;
 -(void) removeTower:(CCTower*)tower;
 -(NSMutableArray*) getTowers;
+
+-(void) addDrag:(CDrag*)drag;
+-(void) removeDrag:(CDrag*)drag;
+-(NSMutableArray*) getDrag;
+
+-(void) addGameUI:(CDrag*)gameui;
+-(void) removeGameUI:(CDrag*)gameui;
+-(NSMutableArray*) getGameUI;
+
+
+NSMutableArray *touchables;
 
 -(void) buildCoordinatePath;
 -(NSMutableArray*) getCoordinatePath;
