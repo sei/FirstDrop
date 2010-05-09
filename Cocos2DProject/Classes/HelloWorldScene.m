@@ -36,6 +36,8 @@ CCTMXLayer *gTileMapLayer;
 	// Apple recommends to re-assign "self" with the "super" return value
 	if( (self=[super init] )) {
 		
+		self.isTouchEnabled = YES;
+		
 		// create and initialize a Label
 		//CCLabel* label = [CCLabel labelWithString:@"Hello World" fontName:@"Marker Felt" fontSize:64];
 
@@ -67,6 +69,89 @@ CCTMXLayer *gTileMapLayer;
 		[self schedule:@selector(tick:) interval:1.f];
 	}
 	return self;
+}
+
+// mouse event
+
+- (BOOL)ccTouchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
+{
+	//Add a new body/atlas sprite at the touched location
+	for( UITouch *touch in touches ) {
+		CGPoint location = [touch locationInView: [touch view]];
+		
+		location = [[CCDirector sharedDirector] convertToGL: location];
+		
+		CGSize size = [[CCDirector sharedDirector] winSize];
+		
+		[CCTower spawn:ccp((int)(location.x / CELL_SIZE),
+						   (int)((size.height - location.y) / CELL_SIZE))];
+		
+		if(m_tempTower)
+		{
+			[self removeChild:m_tempTower cleanup:YES];
+			m_tempTower = nil;
+		}
+		
+
+	}
+	return kEventHandled;
+}
+
+- (BOOL)ccTouchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
+{
+	//Add a new body/atlas sprite at the touched location
+	for( UITouch *touch in touches ) {
+		CGPoint location = [touch locationInView: [touch view]];
+		
+		location = [[CCDirector sharedDirector] convertToGL: location];
+		
+		if(m_tempTower)
+		{		
+//			CGSize size = [[CCDirector sharedDirector] winSize];
+//			
+//			CGPoint gridpos;
+//			gridpos.x = (int)(location.x / CELL_SIZE);
+//			gridpos.y = (int)((size.height - location.y) / CELL_SIZE);
+//			
+//			CGPoint position = [gTileMapLayer positionAt:gridpos];
+			
+			[m_tempTower setPosition:location];
+		}
+		
+		
+	}
+	return kEventHandled;
+}
+
+- (BOOL)ccTouchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
+{
+	//Add a new body/atlas sprite at the touched location
+	for( UITouch *touch in touches ) {
+		CGPoint location = [touch locationInView: [touch view]];
+		
+		location = [[CCDirector sharedDirector] convertToGL: location];
+		
+		
+		
+		m_tempTower = [CCSprite spriteWithFile: @"MushroomRed.png"];
+		
+//		CGSize size = [[CCDirector sharedDirector] winSize];		
+//		
+//		CGPoint gridpos;
+//		gridpos.x = (int)(location.x / CELL_SIZE);
+//		gridpos.y = (int)((size.height - location.y) / CELL_SIZE);
+//		
+//		CGPoint position = [gTileMapLayer positionAt:gridpos];
+		
+		[m_tempTower setScale: 0.3f];
+		[m_tempTower setPosition:location];
+		//[m_tempTower setAnchorPoint:ccp(0.f, 0.f)];
+		[m_tempTower setOpacity:200];
+		
+		[self addChild:m_tempTower];
+	
+	}
+	return kEventHandled;
 }
 
 -(void) addMonster:(CCMonster*)monster
@@ -199,6 +284,9 @@ CCTMXLayer *gTileMapLayer;
 {
 	return [self getTileGidAtIndex:cellIndex] == TILE_END_POINT_GID;
 }
+
+
+
 
 // on "dealloc" you need to release all your retained objects
 - (void) dealloc
