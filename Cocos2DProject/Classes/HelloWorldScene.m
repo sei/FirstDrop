@@ -94,6 +94,8 @@ CCTMXLayer *gTileMapLayer;
 		for (CDrag* drag in drags) {
 			[drag TouchesEnd:touches];
 		}
+		
+		
 
 	}
 	return kEventHandled;
