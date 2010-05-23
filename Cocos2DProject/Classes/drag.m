@@ -20,11 +20,19 @@
 	[spDrag setOpacity:200];
 	[spDrag setVisible:NO];
 	
-	[gLayer addDrag:spDrag];
+	//[gLayer addTouchable:spDrag];
+	[gLayer setDrag:spDrag];
+
+	
+	spDrag->checkable = NO;
+//	[gLayer addDrag:spDrag];
 }
 
 -(void) TouchesBegan : (NSSet *)touches
 {
+	if (checkable == NO)
+		return;
+	
 	for( UITouch *touch in touches ) {
 		
 		CGPoint location = [touch locationInView: [touch view]];
@@ -38,6 +46,9 @@
 
 -(void) TouchesMove : (NSSet *)touches
 {
+	if (checkable == NO)
+		return;
+	
 	for( UITouch *touch in touches ) {
 		
 		CGPoint location = [touch locationInView: [touch view]];
@@ -50,7 +61,24 @@
 
 -(void) TouchesEnd : (NSSet *)touches
 {
-	[self setVisible:NO];
+	if (checkable == NO)
+		return;
+	
+	for( UITouch *touch in touches ) {
+		
+		CGPoint location = [touch locationInView: [touch view]];
+		location = [[CCDirector sharedDirector] convertToGL: location];
+		
+	//	checkable = NO;
+
+		[self setVisible:NO];
+		[gLayer spawnTower : location];
+	}
+}
+
+-(void) setCheckable:(bool)flag
+{
+	checkable = flag;
 }
 
 @end

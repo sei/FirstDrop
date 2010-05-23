@@ -11,8 +11,9 @@
 
 
 @interface CDrag : CTouchable {
-	
+	bool checkable;
 }
 
 +(void) spawn:(NSString*)filename;
+-(void) setCheckable:(bool)flag;
 @end

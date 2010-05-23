@@ -1,4 +1,5 @@
 
+
 // When you import this file, you import all the cocos2d classes
 #import "cocos2d.h"
 #import "Monster.h"
@@ -28,37 +29,39 @@
 	CCTMXTiledMap *tileMap;
 	
 	NSMutableArray *coordinatePath;
-	
-	NSMutableArray *towers;
+
 	NSMutableArray *monsters;
 	
-	NSMutableArray *drags;
-	NSMutableArray *gameuis;
+	NSMutableArray *touchables;
 	
-	int tickCount;
+	CDrag* m_drag;
+	
+	int m_selectedUI;
+
 }
 
 // returns a Scene that contains the HelloWorld as the only child
 +(id) scene;
 
+-(void) setSelectedUI:(int)index;
+-(int) getSelectedUI;
+//+(void) setTower()
+
 -(void) addMonster:(CCMonster*)monster;
 -(void) removeMonster:(CCMonster*)monster;
 -(NSMutableArray*) getMonsters;
 
--(void) addTower:(CCTower*)tower;
--(void) removeTower:(CCTower*)tower;
--(NSMutableArray*) getTowers;
-
--(void) addDrag:(CDrag*)drag;
--(void) removeDrag:(CDrag*)drag;
--(NSMutableArray*) getDrag;
-
--(void) addGameUI:(CDrag*)gameui;
--(void) removeGameUI:(CDrag*)gameui;
--(NSMutableArray*) getGameUI;
+-(void) setDrag:(CDrag*)drag;
+-(void) setDragOn:(bool)flag;
 
 
-NSMutableArray *touchables;
+-(void) spawnTower:(CGPoint) location;
+
+-(void) addTouchable:(CTouchable*)touchable;
+-(void) removeTouchable:(CTouchable*)touchable;
+-(NSMutableArray*) getTouchable;
+
+//NSMutableArray *touchables;
 
 -(void) buildCoordinatePath;
 -(NSMutableArray*) getCoordinatePath;
@@ -77,3 +80,5 @@ NSMutableArray *touchables;
 
 extern HelloWorld *gLayer; 
 extern CCTMXLayer *gTileMapLayer;
+extern int mapTowers[CELL_COUNT_X][CELL_COUNT_Y];
+
