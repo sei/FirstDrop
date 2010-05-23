@@ -94,6 +94,8 @@
 {
 	CCBullet *bullet = [CCBullet spawn:self monster:target];
 	[bullets addObject:bullet];
+	
+	[target shotBy:bullet];
 }
 
 -(CGPoint) getCoordinate

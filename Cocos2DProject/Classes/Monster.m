@@ -11,6 +11,8 @@
 
 @implementation CCMonster
 
+@synthesize myBullets = m_myBullets;
+
 +(void) spawn
 {
 	CCMonster *monster = [CCMonster spriteWithFile: @"CuteChicken.png"];
@@ -26,6 +28,8 @@
 	[monster setScale: 0.3f];
 	[monster setPosition:position];
 	[monster setAnchorPoint:ccp(0.f, 0.f)];
+	
+	monster.myBullets = [[NSMutableArray alloc] init];
 	
 	[gLayer addMonster:monster];
 
@@ -84,13 +88,22 @@
 	}	
 }	
 
--(void) hitBy:(CCTower*)tower
+-(void) shotBy:(CCBullet*)bullet
+{
+	[m_myBullets addObject:bullet];
+}
+
+-(void) hitBy:(CCTower*)tower bullet:(CCBullet*)bullet
 {
 	m_fHP -= tower.attackDamage;
 	
-	if (m_fHP <= 0)
+	[m_myBullets removeObject:bullet];
+	if (![m_myBullets count])
 	{
-		[self despawn];
+		if (m_fHP <= 0)
+		{
+			[self despawn];
+		}
 	}
 }
 

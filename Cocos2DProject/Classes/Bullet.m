@@ -76,7 +76,7 @@
 		[self setPosition:monster.position];
 		[gLayer removeChild:self cleanup:YES];
 		
-		[monster hitBy:tower];
+		[monster hitBy:tower bullet:self];
 	}
 }
 
