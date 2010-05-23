@@ -10,6 +10,7 @@
 
 HelloWorld *gLayer; 
 CCTMXLayer *gTileMapLayer;
+int mapTowers[CELL_COUNT_X][CELL_COUNT_Y];
 
 // HelloWorld implementation
 @implementation HelloWorld
@@ -51,6 +52,8 @@ CCTMXLayer *gTileMapLayer;
 		//[self addChild: label];
 		
 		gLayer = self;
+		m_drag = nil;
+		m_selectedUI = 0;
 		
 		tileMap = [CCTMXTiledMap tiledMapWithTMXFile: @"FirstTileMap.tmx"];
 		[self addChild:tileMap];
@@ -58,24 +61,33 @@ CCTMXLayer *gTileMapLayer;
 		gTileMapLayer = [tileMap layerNamed: @"Layer 0"];
 	
 		monsters = [[NSMutableArray alloc] init];
-		towers = [[NSMutableArray alloc] init];
-		drags = [[NSMutableArray alloc] init];
-		gameuis = [[NSMutableArray alloc] init];
-				
-//		[CCTower spawn:ccp(2, 4)];
-//		[CCTower spawn:ccp(7, 6)];
-//		[CCTower spawn:ccp(12, 3)];
-		
+		touchables = [[NSMutableArray alloc] init];
+
 		[CDrag spawn:@"MushroomRed.png"];
 		
-		[self buildCoordinatePath];
+		CGPoint uiPos = ccp( 2, 0);//2 * CELL_SIZE, 0 );
+//		uiPos = [CGPoint()];
+		[CGameUI spawn:@"MushroomRed.png" withPosition:uiPos];
 		
+		[self buildCoordinatePath];
+
 		// monster tick
 		[self schedule:@selector(tick:) interval:1.f];
+
+		memset(mapTowers, 0, sizeof(mapTowers));
 	}
 	return self;
 }
 
+-(void) setSelectedUI:(int)index
+{
+	m_selectedUI = index;
+}
+
+-(int) getSelectedUI
+{
+	return m_selectedUI;
+}
 // mouse event
 
 - (BOOL)ccTouchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
@@ -86,17 +98,19 @@ CCTMXLayer *gTileMapLayer;
 		
 		location = [[CCDirector sharedDirector] convertToGL: location];
 		
-		CGSize size = [[CCDirector sharedDirector] winSize];
 		
-		[CCTower spawn:ccp((int)(location.x / CELL_SIZE),
-						   (int)((size.height - location.y) / CELL_SIZE))];
-		
-		for (CDrag* drag in drags) {
-			[drag TouchesEnd:touches];
+//		if (
+//		[self spawnTower:pos];
+		if (nil != m_drag)
+		{
+			[m_drag TouchesEnd:touches];
 		}
 		
+		for (CTouchable* touch in touchables) {
+			[touch TouchesEnd:touches];
+		}
 		
-
+	
 	}
 	return kEventHandled;
 }
@@ -109,9 +123,16 @@ CCTMXLayer *gTileMapLayer;
 		
 		location = [[CCDirector sharedDirector] convertToGL: location];
 		
-		for (CDrag* drag in drags) {
-			[drag TouchesMove:touches];
+		if (nil != m_drag)
+		{
+			[m_drag TouchesMove:touches];
 		}
+		
+		for (CTouchable* touch in touchables) {
+			[touch TouchesMove:touches];
+		}
+		
+		
 		
 	}
 	return kEventHandled;
@@ -125,10 +146,17 @@ CCTMXLayer *gTileMapLayer;
 		
 		location = [[CCDirector sharedDirector] convertToGL: location];
 		
-		for (CDrag* drag in drags) {
-			[drag TouchesBegan:touches];
+		if (nil != m_drag)
+		{
+			[m_drag TouchesBegan:touches];
 		}
 		
+		for (CTouchable* touch in touchables) {
+			[touch TouchesBegan:touches];
+		}
+		
+	
+
 	}
 	return kEventHandled;
 }
@@ -150,56 +178,48 @@ CCTMXLayer *gTileMapLayer;
 	return monsters;
 }
 
--(void) addTower:(CCTower*)tower
+-(void) spawnTower : (CGPoint) location
 {
-	[self addChild:tower];
-	[towers addObject:tower];
+	CGSize size = [[CCDirector sharedDirector] winSize];
+	
+	CGPoint pos = ccp((int)(location.x / CELL_SIZE),
+					  (int)((size.height - location.y) / CELL_SIZE));
+	
+	[CCTower spawn:pos];//
+	
 }
 
--(void) removeTower:(CCTower*)tower
-{
-	[towers removeObject:tower];
-	[self removeChild:tower cleanup:YES];
-}
-
--(NSMutableArray*) getTowers
-{
-	return towers;
-}
-
--(void) addDrag:(CDrag*)drag
+-(void) setDrag:(CDrag*)drag
 {
 	[self addChild:drag];
-	[drags addObject:drag];
+	m_drag = drag;
 }
 
--(void) removeDrag:(CDrag*)drag
+-(void) setDragOn:(bool)flag
 {
-	[drags removeObject:drag];
-	[self removeChild:drag cleanup:YES];
+	if (nil != m_drag)
+	{
+		[m_drag setCheckable:flag];
+	}
 }
 
--(NSMutableArray*) getDrag
+-(void) addTouchable:(CTouchable*)touchable
 {
-	return drags;
+	[self addChild:touchable];
+	[touchables addObject:touchable];
 }
 
--(void) addGameUI:(CGameUI*)gameui
+-(void) removeTouchable:(CTouchable*)touchable
 {
-	[self addChild:gameui];
-	[gameuis addObject:gameui];
+	[touchables removeObject:touchable];
+	[self removeChild:touchable cleanup:YES];
 }
 
--(void) removeGameUI:(CGameUI*)gameui
+-(NSMutableArray*) getTouchable
 {
-	[gameuis removeObject:gameui];
-	[self removeChild:gameui cleanup:YES];
+	return touchables;
 }
 
--(NSMutableArray*) getGameUI
-{
-	return gameuis;
-}
 
 -(NSMutableArray*) getCoordinatePath
 {		

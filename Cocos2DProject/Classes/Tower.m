@@ -14,6 +14,23 @@
 
 +(void) spawn:(CGPoint)coordinate
 {
+
+	if (coordinate.y >= CELL_COUNT_Y - 1)
+		return;
+	
+	int gid = [gTileMapLayer tileGIDAt:coordinate];
+	if (TILE_PATH_GID == gid || TILE_START_POINT_GID == gid || TILE_END_POINT_GID == gid)
+		return;
+
+	
+	if (mapTowers[(int)coordinate.x][(int)coordinate.y] != 0)
+	{
+		return;
+	}
+	else {
+		mapTowers[(int)coordinate.x][(int)coordinate.y] = 1;
+	}
+
 	CCTower *tower = [CCTower spriteWithFile: @"MushroomRed.png"];
 	
 	tower->coordinate = coordinate;
@@ -25,7 +42,8 @@
 	[tower setPosition:position];
 	[tower setAnchorPoint:ccp(0.f, 0.f)];
 	
-	[gLayer addTower:tower];
+	[gLayer addTouchable:tower];
+	//[gLayer addTower:tower];
 	
 	[tower schedule:@selector(tick:) interval:FIRING_TICK_TIME];//tower->speed];
 	//[monster schedule:@selector(update:)];
