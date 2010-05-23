@@ -34,6 +34,8 @@
 	
 	NSMutableArray *drags;
 	NSMutableArray *gameuis;
+	
+	int tickCount;
 }
 
 // returns a Scene that contains the HelloWorld as the only child

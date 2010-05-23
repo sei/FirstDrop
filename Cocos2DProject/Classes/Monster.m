@@ -19,6 +19,10 @@
 	monster->cellIndex = 0;
 	CGPoint position = [gTileMapLayer positionAt:[HelloWorld getCellCoordinateAtIndex:monster->cellIndex]];
 	
+	monster->m_fHP = 80;	// 체력
+	monster->m_fArmor = 1;		// 방어력
+	monster->m_fMoney = 10;		// 돈 올라가는 수치
+	
 	[monster setScale: 0.3f];
 	[monster setPosition:position];
 	[monster setAnchorPoint:ccp(0.f, 0.f)];
@@ -44,6 +48,7 @@
 	[monster moveToNextCell:MONSTER_TICK_TIME];
 	
 	[monster schedule:@selector(tick:) interval:MONSTER_TICK_TIME];
+	
 	//[monster schedule:@selector(update:)];
 }
 
@@ -66,6 +71,8 @@
 
 -(void) tick:(ccTime)dt
 {
+	//dt *= MONSTER_TICK_COUNT;
+	
 	if (![HelloWorld isEndPointAtIndex:cellIndex])
 	{
 		[self moveToNextCell:dt];
@@ -76,6 +83,16 @@
 		//[self schedule:@selector(despawn:) interval:dt];
 	}	
 }	
+
+-(void) hitBy:(CCTower*)tower
+{
+	m_fHP -= tower.attackDamage;
+	
+	if (m_fHP <= 0)
+	{
+		[self despawn];
+	}
+}
 
 -(int) getCellIndex
 {

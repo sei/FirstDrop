@@ -11,7 +11,7 @@
 #import "touchable.h"
 #import "HelloWorldScene.h"
 
-#define FIRING_TICK_TIME 0.3f
+#define FIRING_TICK_TIME 0.5f
 
 @class CCMonster;
 
@@ -20,9 +20,16 @@
 	CGPoint coordinate;
 	int range; // in radius
 	int firingTick;
+	
+	float m_fAttackDamage;	// 공격력
+	
+	NSMutableArray *bullets;
+	
+	int tickCount;
 }
 
 +(void) spawn:(CGPoint)coordinate;
+-(void) tick:(ccTime)dt;
 
 -(CCMonster*) findMonsterInRange;
 
@@ -30,5 +37,7 @@
 
 -(CGPoint) getCoordinate;
 -(int) getRange;
+
+@property(nonatomic,readwrite,assign) float attackDamage;
 
 @end

@@ -12,6 +12,8 @@
 
 @implementation CCTower
 
+@synthesize attackDamage = m_fAttackDamage;
+
 +(void) spawn:(CGPoint)coordinate
 {
 	CCTower *tower = [CCTower spriteWithFile: @"MushroomRed.png"];
@@ -19,25 +21,31 @@
 	tower->coordinate = coordinate;
 	tower->range = 60;
 	//tower->speed = 0.1f;
+	
+	tower->m_fAttackDamage = 10;
+	
 	CGPoint position = [gTileMapLayer positionAt:coordinate];
 	
 	[tower setScale: 0.3f];
 	[tower setPosition:position];
 	[tower setAnchorPoint:ccp(0.f, 0.f)];
 	
+	tower->bullets = [[NSMutableArray alloc] init];
+	
 	[gLayer addTower:tower];
 	
 	[tower schedule:@selector(tick:) interval:FIRING_TICK_TIME];//tower->speed];
-	//[monster schedule:@selector(update:)];
 }
 
 -(void) tick:(ccTime)dt
-{
+{	
 	CCMonster *monster = [self findMonsterInRange];
 	if (monster)
 	{
 		[self fire:monster];
 	}
+	
+	tickCount++;
 }
 
 -(CCMonster*) findMonsterInRange
@@ -66,7 +74,8 @@
 
 -(void) fire:(CCMonster*)target
 {
-	[CCBullet spawn:self monster:target];
+	CCBullet *bullet = [CCBullet spawn:self monster:target];
+	[bullets addObject:bullet];
 }
 
 -(CGPoint) getCoordinate

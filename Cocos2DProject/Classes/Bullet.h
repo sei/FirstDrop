@@ -10,21 +10,23 @@
 #import "cocos2d.h"
 #import "HelloWorldScene.h"
 
+#define BULLET_TICK_TIME 0.1f
 
 @interface CCBullet : CCSprite 
 {
 	CCTower *tower;
 	CCMonster *monster;
 	
-	CGPoint pos;
-	CGPoint startPos;
-	CGPoint endPos;
-	
 	float moveSpeed; // in pixels/sec
 }
 
-+(void) spawn:(CCTower*)tower monster:(CCMonster*)monster;
++(CCBullet*) spawn:(CCTower*)tower monster:(CCMonster*)monster;
+-(void) tick:(ccTime)dt;
 
+-(CGPoint) calcTargetPos;
+-(float) calcTravelTime:(CGPoint)targetPos;
+
+-(bool) hasHitTarget;
 -(void) moveFinished:(ccTime)dt;
 
 @end

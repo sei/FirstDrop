@@ -61,10 +61,6 @@ CCTMXLayer *gTileMapLayer;
 		towers = [[NSMutableArray alloc] init];
 		drags = [[NSMutableArray alloc] init];
 		gameuis = [[NSMutableArray alloc] init];
-				
-//		[CCTower spawn:ccp(2, 4)];
-//		[CCTower spawn:ccp(7, 6)];
-//		[CCTower spawn:ccp(12, 3)];
 		
 		[CDrag spawn:@"MushroomRed.png"];
 		
@@ -313,7 +309,7 @@ CCTMXLayer *gTileMapLayer;
 }
 
 -(void) tick:(ccTime)dt
-{
+{	
 	[CCMonster spawn];
 }
 
